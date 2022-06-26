@@ -37,6 +37,14 @@
 
 #define PKG_CONFIG_EXT ".pc"
 
+static unsigned int
+pkgconf_pkg_traverse_main(pkgconf_client_t *client,
+	pkgconf_pkg_t *root,
+	pkgconf_pkg_traverse_func_t func,
+	void *data,
+	int maxdepth,
+	unsigned int skip_flags);
+
 static inline bool
 str_has_suffix(const char *str, const char *suffix)
 {
@@ -1478,7 +1486,7 @@ pkgconf_pkg_walk_list(pkgconf_client_t *client,
 		pkgconf_audit_log_dependency(client, pkgdep, depnode);
 
 		pkgdep->flags |= PKGCONF_PKG_PROPF_SEEN;
-		eflags |= pkgconf_pkg_traverse(client, pkgdep, func, data, depth - 1, skip_flags);
+		eflags |= pkgconf_pkg_traverse_main(client, pkgdep, func, data, depth - 1, skip_flags);
 		pkgdep->flags &= ~PKGCONF_PKG_PROPF_SEEN;
 		pkgconf_pkg_unref(client, pkgdep);
 	}
@@ -1549,8 +1557,8 @@ pkgconf_pkg_walk_conflicts_list(pkgconf_client_t *client,
  *    :return: ``PKGCONF_PKG_ERRF_OK`` on success, else an error code.
  *    :rtype: unsigned int
  */
-unsigned int
-pkgconf_pkg_traverse(pkgconf_client_t *client,
+static unsigned int
+pkgconf_pkg_traverse_main(pkgconf_client_t *client,
 	pkgconf_pkg_t *root,
 	pkgconf_pkg_traverse_func_t func,
 	void *data,
@@ -1596,6 +1604,17 @@ pkgconf_pkg_traverse(pkgconf_client_t *client,
 	}
 
 	return eflags;
+}
+
+unsigned int
+pkgconf_pkg_traverse(pkgconf_client_t *client,
+	pkgconf_pkg_t *root,
+	pkgconf_pkg_traverse_func_t func,
+	void *data,
+	int maxdepth,
+	unsigned int skip_flags)
+{
+	return pkgconf_pkg_traverse_main(client, root, func, data, maxdepth, skip_flags);
 }
 
 static void
