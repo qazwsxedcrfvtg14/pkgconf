@@ -1570,6 +1570,21 @@ pkgconf_pkg_traverse_main(pkgconf_client_t *client,
 	if (maxdepth == 0)
 		return eflags;
 
+	unsigned int visited_flag = (client->flags & PKGCONF_PKG_PKGF_ITER_PKG_IS_PRIVATE) ? PKGCONF_PKG_PROPF_VISITED_PRIVATE : PKGCONF_PKG_PROPF_VISITED;
+
+	if (root->traverse_id == client->traverse_id)
+	{
+		if (root->flags & visited_flag)
+			return eflags;
+	}
+	else
+	{
+		root->traverse_id = client->traverse_id;
+		root->flags &= ~(PKGCONF_PKG_PROPF_VISITED | PKGCONF_PKG_PROPF_VISITED_PRIVATE);
+	}
+
+	root->flags |= visited_flag;
+
 	PKGCONF_TRACE(client, "%s: level %d", root->id, maxdepth);
 
 	if ((root->flags & PKGCONF_PKG_PROPF_VIRTUAL) != PKGCONF_PKG_PROPF_VIRTUAL || (client->flags & PKGCONF_PKG_PKGF_SKIP_ROOT_VIRTUAL) != PKGCONF_PKG_PKGF_SKIP_ROOT_VIRTUAL)
@@ -1614,6 +1629,9 @@ pkgconf_pkg_traverse(pkgconf_client_t *client,
 	int maxdepth,
 	unsigned int skip_flags)
 {
+	static uint64_t traverse_id = 0;
+	client->traverse_id = ++traverse_id;
+
 	return pkgconf_pkg_traverse_main(client, root, func, data, maxdepth, skip_flags);
 }
 
