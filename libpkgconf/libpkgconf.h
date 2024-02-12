@@ -176,7 +176,6 @@ struct pkgconf_pkg_ {
 	pkgconf_tuple_t *orig_prefix;
 	pkgconf_tuple_t *prefix;
 
-	uint64_t serial;
 	uint64_t identifier;
 	uint64_t traverse_serial;
 };
@@ -213,8 +212,8 @@ struct pkgconf_client_ {
 
 	bool already_sent_notice;
 
+	/* a counter to create identifiers for pkg nodes and to identify traversals */
 	uint64_t serial;
-	uint64_t identifier;
 	uint64_t traverse_serial;
 
 	pkgconf_pkg_t **cache_table;

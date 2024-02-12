@@ -1511,7 +1511,7 @@ pkgconf_pkg_walk_list(pkgconf_client_t *client,
 
 		if((pkgdep->flags & PKGCONF_PKG_PKGF_ANCESTOR) != 0)
 		{
-			pkgdep->identifier = ++client->identifier;
+			pkgdep->identifier = ++client->serial;
 
 			/* In this case we have a circular reference.
 			 * We break that by deleteing the circular node from the
@@ -1540,8 +1540,6 @@ pkgconf_pkg_walk_list(pkgconf_client_t *client,
 
 		pkgconf_audit_log_dependency(client, pkgdep, depnode);
 
-		pkgdep->identifier = ++client->identifier;
-		pkgdep->serial = client->serial;
 		eflags |= pkgconf_pkg_traverse_main(client, pkgdep, func, data, depth - 1, skip_flags);
 next:
 		pkgconf_pkg_unref(client, pkgdep);
@@ -1632,10 +1630,13 @@ pkgconf_pkg_traverse_main(pkgconf_client_t *client,
 	/* If we have already visited this node, check if we have done so as a Requires or Requires.private
 	 * query as appropriate, and short-circuit if so.
 	 */
-	if ((root->flags & PKGCONF_PKG_PROPF_VIRTUAL) == 0 && root->traverse_serial == client->traverse_serial)
+	if (root->traverse_serial == client->traverse_serial)
 	{
-		if (root->flags & visited_flag)
-			return eflags;
+		if ((root->flags & PKGCONF_PKG_PROPF_VIRTUAL) == 0)
+		{
+			if (root->flags & visited_flag)
+				return eflags;
+		}
 	}
 	else
 	{
@@ -1691,9 +1692,7 @@ pkgconf_pkg_traverse(pkgconf_client_t *client,
 	unsigned int skip_flags)
 {
 	if (root->flags & PKGCONF_PKG_PROPF_VIRTUAL)
-		client->serial++;
-
-	client->traverse_serial++;
+		client->traverse_serial = ++client->serial;
 
 	return pkgconf_pkg_traverse_main(client, root, func, data, maxdepth, skip_flags);
 }

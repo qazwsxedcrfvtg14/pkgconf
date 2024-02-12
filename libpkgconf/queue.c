@@ -162,7 +162,7 @@ flatten_dependency_set(pkgconf_client_t *client, pkgconf_list_t *list)
 		if (pkg == NULL)
 			continue;
 
-		if (pkg->serial == client->serial)
+		if (pkg->identifier == client->serial)
 		{
 			pkgconf_node_delete(node, list);
 			pkgconf_dependency_unref(client, dep);
@@ -189,7 +189,7 @@ flatten_dependency_set(pkgconf_client_t *client, pkgconf_list_t *list)
 			}
 		}
 
-		pkg->serial = client->serial;
+		pkg->identifier = client->serial;
 
 		/* copy to the deps table */
 		dep_count++;
