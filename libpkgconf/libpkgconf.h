@@ -137,8 +137,7 @@ struct pkgconf_path_ {
 #define PKGCONF_PKG_PROPF_CACHED		0x02
 #define PKGCONF_PKG_PROPF_UNINSTALLED		0x08
 #define PKGCONF_PKG_PROPF_VIRTUAL		0x10
-#define PKGCONF_PKG_PROPF_VISITED		0x20
-#define PKGCONF_PKG_PROPF_VISITED_PRIVATE	0x40
+#define PKGCONF_PKG_PROPF_PRIVATE		0x40
 
 struct pkgconf_pkg_ {
 	int refcount;
