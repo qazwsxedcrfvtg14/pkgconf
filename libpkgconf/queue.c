@@ -163,7 +163,7 @@ flatten_dependency_set(pkgconf_client_t *client, pkgconf_list_t *list)
 {
 	pkgconf_node_t *node, *next;
 	pkgconf_dependency_t **deps = NULL;
-	size_t dep_count = 0, i;
+	size_t dep_count = 0, i, dep_allocation = 0;
 
 	PKGCONF_FOREACH_LIST_ENTRY_SAFE(list->head, next, node)
 	{
@@ -204,7 +204,11 @@ flatten_dependency_set(pkgconf_client_t *client, pkgconf_list_t *list)
 
 		/* copy to the deps table */
 		dep_count++;
-		deps = pkgconf_reallocarray(deps, dep_count, sizeof (void *));
+		if (dep_count > dep_allocation)
+		{
+			dep_allocation = dep_count + 31;
+			deps = pkgconf_reallocarray(deps, dep_allocation, sizeof (void *));
+		}
 		deps[dep_count - 1] = dep;
 
 		PKGCONF_TRACE(client, "added %s to dep table", dep->package);
