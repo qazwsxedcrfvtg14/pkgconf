@@ -1680,6 +1680,9 @@ pkgconf_pkg_traverse(pkgconf_client_t *client,
 	if (root->flags & PKGCONF_PKG_PROPF_VIRTUAL)
 		client->traverse_serial = ++client->serial;
 
+	if ((client->flags & PKGCONF_PKG_PKGF_SEARCH_PRIVATE) == 0)
+		skip_flags |= PKGCONF_PKG_DEPF_PRIVATE;
+
 	return pkgconf_pkg_traverse_main(client, root, func, data, maxdepth, skip_flags);
 }
 
