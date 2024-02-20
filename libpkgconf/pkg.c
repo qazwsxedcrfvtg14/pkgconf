@@ -1511,8 +1511,6 @@ pkgconf_pkg_walk_list(pkgconf_client_t *client,
 
 		if((pkgdep->flags & PKGCONF_PKG_PKGF_ANCESTOR) != 0)
 		{
-			pkgdep->identifier = ++client->serial;
-
 			/* In this case we have a circular reference.
 			 * We break that by deleteing the circular node from the
 			 * the list, so that we dont create a situation where
@@ -1546,7 +1544,7 @@ next:
 	}
 
 	parent->flags &= ~PKGCONF_PKG_PKGF_ANCESTOR;
-
+	parent->identifier = ++client->serial;
 	return eflags;
 }
 

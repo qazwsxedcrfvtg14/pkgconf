@@ -105,11 +105,6 @@ pkgconf_queue_free(pkgconf_list_t *list)
 static void
 pkgconf_queue_update_identifiers(pkgconf_client_t *client, pkgconf_pkg_t *pkg, void *data)
 {
-	/* Update the identifier whenever this node is reached.
-	 * Force re-visiting by resetting traverse_serial.
-	 */
-	pkg->identifier = ++client->serial;
-	--pkg->traverse_serial;
 	if ((client->flags & PKGCONF_PKG_PKGF_ITER_PKG_IS_PRIVATE) == 0)
 		pkg->flags &= ~PKGCONF_PKG_PROPF_PRIVATE;
 }
@@ -155,7 +150,7 @@ dep_sort_cmp(const void *a, const void *b)
 	const pkgconf_dependency_t *depA = *(void **) a;
 	const pkgconf_dependency_t *depB = *(void **) b;
 
-	return depB->match->identifier - depA->match->identifier;
+	return depA->match->identifier - depB->match->identifier;
 }
 
 static inline void
